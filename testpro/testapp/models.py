@@ -1,5 +1,3 @@
-import datetime
-
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
 
@@ -22,6 +20,9 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+class Roles(models.Model):
+        roles_id = models.AutoField(primary_key=True)
+        roles_name = models.CharField(max_length=50)
 
 class User(AbstractBaseUser):
     USER_CHOICES = (
@@ -35,13 +36,13 @@ class User(AbstractBaseUser):
     phone = models.CharField(max_length=10, unique=False)
     city = models.CharField(max_length=60, null=True)
     aadhar = models.CharField(max_length=12, unique=True,null=True)
+    roles_id =models.ForeignKey(Roles,on_delete=models.CASCADE,null=True)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_landowner= models.BooleanField(default=False)
     is_Tenant= models.BooleanField(default=False)
-
 
 
     objects = MyUserManager()
@@ -63,27 +64,21 @@ class User(AbstractBaseUser):
 
 
 class Watersources(models.Model):
+    watersource_id = models.AutoField(primary_key=True)
     watersource_name=models.CharField(max_length=50)
 
+class Soiltypes(models.Model):
+    soil_id=models.AutoField(primary_key=True)
+    soil_name=models.CharField(max_length=50)
 
-class property(models.Model):
+
+class Property(models.Model):
     user_id = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    soil_id=models.ForeignKey(Soiltypes,on_delete=models.CASCADE,null=True)
+    water_id=models.ForeignKey(Watersources,on_delete=models.CASCADE,null=True)
     area=models.CharField(max_length=40, unique=False)
     city = models.CharField(max_length=255)
     images=models.FileField(upload_to=None)
     price=models.IntegerField(unique=True)
     description=models.CharField(max_length=255)
-    TYPESOFSOIL_CHOICES = (
-        ('c', 'Clay'),
-        ('s', 'silt'),
-        ('ch', 'chalk'),
-        ('p', 'peat'),
-        ('l', 'loam'),
-    )
-    type_of_soil=models.CharField(max_length=2, choices=TYPESOFSOIL_CHOICES)
-    water=models.ForeignKey(Watersources,on_delete=models.CASCADE,null=True)
 
-
-class Reviews(models.Model):
-    user_id = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
-    review=models.CharField(max_length=255)
