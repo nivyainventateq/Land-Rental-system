@@ -4,7 +4,7 @@ from django.db import models
 
 class MyUserManager(BaseUserManager):
 
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email, password, **extra_fields):
         if not email:
             raise ValueError('The Email must be set')
         user = self.model(email=self.normalize_email(email), **extra_fields)
@@ -55,9 +55,6 @@ class User(AbstractBaseUser):
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
-
-    def has_perm(self, perm, obj=None):
-        return self.is_landowner
 
     def has_module_perms(self, app_label):
         return True
